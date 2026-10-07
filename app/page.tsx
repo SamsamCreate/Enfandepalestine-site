@@ -37,9 +37,11 @@ export default function Home() {
         <h2 className="mb-8 font-tight text-xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-2xl">
           Dernières sorties
         </h2>
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
+        <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-10 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
           {LATEST_PRODUCTS.map((product) => (
-            <ProductCard key={product.name} {...product} />
+            <div key={product.name} className="w-[78%] shrink-0 snap-start md:w-auto md:shrink">
+              <ProductCard {...product} />
+            </div>
           ))}
         </div>
       </section>

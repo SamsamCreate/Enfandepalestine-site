@@ -57,16 +57,17 @@ export function DonationsSection({
 
       <div
         ref={scrollerRef}
-        className="flex gap-6 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {donations.map((donation) => (
-          <DonationCard
-            key={donation.id}
-            date={donation.dateLabel}
-            handle={donation.organization}
-            amount={donation.amount}
-            description={donation.description}
-          />
+          <div key={donation.id} className="snap-start">
+            <DonationCard
+              date={donation.dateLabel}
+              handle={donation.organization}
+              amount={donation.amount}
+              description={donation.description}
+            />
+          </div>
         ))}
       </div>
 

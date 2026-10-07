@@ -21,7 +21,7 @@ export function HeroBlock({
   return (
     <section className="flex flex-col gap-3 lg:gap-4">
       <div
-        className="relative aspect-[3/4] w-full sm:aspect-[16/9] lg:aspect-auto lg:min-h-[calc(55vh+150px)]"
+        className="relative aspect-[3/4] w-full sm:aspect-[16/9] lg:aspect-auto lg:min-h-[calc(55dvh+150px)]"
         style={{ backgroundColor: color }}
       >
         {videoSrc ? (
@@ -34,7 +34,16 @@ export function HeroBlock({
             playsInline
           />
         ) : imageSrc ? (
-          <Image src={imageSrc} alt={imageAlt} fill className="object-cover" priority />
+          <Image
+            src={imageSrc}
+            alt={imageAlt}
+            fill
+            sizes="(min-width: 1024px) calc(100vw - 256px), 100vw"
+            className="object-cover"
+            priority
+            fetchPriority="high"
+            quality={65}
+          />
         ) : null}
       </div>
 
