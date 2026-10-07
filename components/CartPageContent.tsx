@@ -38,7 +38,7 @@ export function CartPageContent() {
           </Link>
         </div>
       ) : (
-        <div className="mt-10 lg:flex lg:items-start lg:gap-12">
+        <div className="mt-10 pb-[calc(88px+env(safe-area-inset-bottom))] lg:flex lg:items-start lg:gap-12 lg:pb-0">
           <ul className="flex flex-col lg:flex-1" role="list">
             {items.map((item) => (
               <CartLineItem key={`${item.productSlug}-${item.size}`} item={item} />
@@ -59,17 +59,20 @@ export function CartPageContent() {
               </div>
             </div>
 
-            <div className="mt-4 flex items-baseline justify-between border-t border-black/10 pt-4">
-              <span className="font-bold">Total</span>
-              <span className="text-xl font-bold">{formatPrice(subtotal, currency)}</span>
-            </div>
+            {/* Desktop: total + CTA inline in the card */}
+            <div className="hidden lg:block">
+              <div className="mt-4 flex items-baseline justify-between border-t border-black/10 pt-4">
+                <span className="font-bold">Total</span>
+                <span className="text-xl font-bold">{formatPrice(subtotal, currency)}</span>
+              </div>
 
-            <Link
-              href="/checkout"
-              className="mt-6 block w-full bg-black py-4 text-center text-xs uppercase tracking-widest text-white hover:opacity-85"
-            >
-              Procéder au paiement
-            </Link>
+              <Link
+                href="/checkout"
+                className="mt-6 block w-full bg-black py-4 text-center text-xs uppercase tracking-widest text-white hover:opacity-85"
+              >
+                Procéder au paiement
+              </Link>
+            </div>
 
             <Link
               href="/produits"
@@ -80,6 +83,25 @@ export function CartPageContent() {
           </aside>
         </div>
       )}
+
+      {/* Mobile: total + CTA pinned to the bottom of the screen */}
+      {items.length > 0 ? (
+        <div
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-white px-4 py-3 lg:hidden"
+          style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+        >
+          <div className="mb-2 flex items-baseline justify-between">
+            <span className="text-sm font-bold">Total</span>
+            <span className="text-lg font-bold">{formatPrice(subtotal, currency)}</span>
+          </div>
+          <Link
+            href="/checkout"
+            className="flex min-h-11 w-full items-center justify-center bg-black text-xs uppercase tracking-widest text-white hover:opacity-85"
+          >
+            Procéder au paiement
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }
