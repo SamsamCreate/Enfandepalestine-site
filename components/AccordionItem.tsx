@@ -36,7 +36,7 @@ export function AccordionItem({
         type="button"
         onClick={handleClick}
         aria-expanded={isOpen}
-        className="flex w-full items-center justify-between gap-4 text-left text-xs uppercase tracking-widest"
+        className="flex min-h-11 w-full items-center justify-between gap-4 text-left text-xs uppercase tracking-widest"
       >
         <span>{title}</span>
         <span aria-hidden="true">{isOpen ? "−" : "+"}</span>

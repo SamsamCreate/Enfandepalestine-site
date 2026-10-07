@@ -30,7 +30,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="lg:flex lg:items-start">
+    <div
+      className="pb-[calc(76px+env(safe-area-inset-bottom))] lg:flex lg:items-start lg:pb-0"
+    >
       <div className="lg:basis-0 lg:grow-[4]">
         <ProductGallery images={product.images} name={product.name} />
       </div>

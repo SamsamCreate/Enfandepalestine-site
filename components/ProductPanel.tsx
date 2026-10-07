@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AccordionItem } from "./AccordionItem";
 import { useCart } from "@/lib/cart-context";
 import type { Product } from "@/lib/products";
@@ -20,6 +20,19 @@ export function ProductPanel({ product }: ProductPanelProps) {
   const [openSection, setOpenSection] = useState<string | null>("detail");
   const { addItem } = useCart();
   const [justAdded, setJustAdded] = useState(false);
+  const [isMainCtaVisible, setIsMainCtaVisible] = useState(true);
+  const mainCtaRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const el = mainCtaRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(([entry]) => setIsMainCtaVisible(entry.isIntersecting), {
+      threshold: 0,
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   function toggleSection(key: string) {
     setOpenSection((current) => (current === key ? null : key));
@@ -40,6 +53,7 @@ export function ProductPanel({ product }: ProductPanelProps) {
   }
 
   return (
+    <>
     <div className="flex flex-col gap-6 border-t border-black/10 px-6 py-8 lg:sticky lg:top-6 lg:max-h-screen lg:basis-96 lg:grow lg:shrink-0 lg:overflow-y-auto lg:border-t-0 lg:border-l lg:px-16 lg:py-10">
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-lg font-bold">{product.name}</h1>
@@ -57,7 +71,7 @@ export function ProductPanel({ product }: ProductPanelProps) {
 
       <p className="text-sm leading-relaxed text-black/70">{product.description}</p>
 
-      <fieldset className="flex flex-wrap gap-2">
+      <fieldset className="grid grid-cols-4 gap-2">
         <legend className="sr-only">Taille</legend>
         {product.sizes.map((size) => (
           <label key={size} className="cursor-pointer">
@@ -69,7 +83,7 @@ export function ProductPanel({ product }: ProductPanelProps) {
               onChange={() => setSelectedSize(size)}
               className="peer sr-only"
             />
-            <span className="flex h-10 min-w-10 items-center justify-center border border-black/20 px-3 text-sm peer-checked:border-black peer-checked:bg-black peer-checked:text-white">
+            <span className="flex h-11 w-full items-center justify-center border border-black/20 px-2 text-sm peer-checked:border-black peer-checked:bg-black peer-checked:text-white">
               {size}
             </span>
           </label>
@@ -78,16 +92,17 @@ export function ProductPanel({ product }: ProductPanelProps) {
 
       <div className="flex gap-3">
         <button
+          ref={mainCtaRef}
           type="button"
           disabled={!product.inStock}
           onClick={handleAddToCart}
-          className="flex-1 bg-black py-3 text-xs uppercase tracking-widest text-white hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex min-h-11 flex-1 items-center justify-center bg-black text-xs uppercase tracking-widest text-white hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {!product.inStock ? "Épuisé" : justAdded ? "Ajouté ✓" : "Add to cart"}
         </button>
         <button
           type="button"
-          className="flex-1 border border-black/20 py-3 text-xs uppercase tracking-widest hover:bg-black/5"
+          className="flex min-h-11 flex-1 items-center justify-center border border-black/20 text-xs uppercase tracking-widest hover:bg-black/5"
         >
           Add to wishlist
         </button>
@@ -124,5 +139,33 @@ export function ProductPanel({ product }: ProductPanelProps) {
         </AccordionItem>
       </div>
     </div>
+
+    {!isMainCtaVisible ? (
+      <div
+        className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-black/10 bg-white px-4 py-3 lg:hidden"
+        style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+      >
+        <div className="flex min-w-0 flex-1 flex-col">
+          <p className="truncate text-sm font-medium">{product.name}</p>
+          {product.inStock ? (
+            <p className="text-sm font-bold">
+              {product.price}
+              {product.currency}
+            </p>
+          ) : (
+            <p className="text-sm text-black/40">Épuisé</p>
+          )}
+        </div>
+        <button
+          type="button"
+          disabled={!product.inStock}
+          onClick={handleAddToCart}
+          className="flex min-h-11 shrink-0 items-center justify-center bg-black px-6 text-xs uppercase tracking-widest text-white hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {!product.inStock ? "Épuisé" : justAdded ? "Ajouté ✓" : "Add to cart"}
+        </button>
+      </div>
+    ) : null}
+    </>
   );
 }
