@@ -8,26 +8,55 @@ const RUNWAY_VH = 70;
 const HIGHLIGHT = "Plus de 228 000 €";
 
 function useShouldStack() {
-  const [shouldStack, setShouldStack] = useState(false);
+  // Defaults to the stacked (mobile-safe) layout: the server can't check the
+  // viewport, and the pinned layout's unwrapped titles overflow narrow
+  // screens if they render even briefly before this effect corrects it.
+  const [shouldStack, setShouldStack] = useState(true);
 
   useEffect(() => {
     const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const heightQuery = window.matchMedia("(min-height: 700px)");
+    // Mobile never gets the pinned effect, regardless of height.
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
 
     function update() {
-      setShouldStack(reducedMotionQuery.matches || !heightQuery.matches);
+      setShouldStack(
+        reducedMotionQuery.matches || !heightQuery.matches || !desktopQuery.matches,
+      );
     }
 
     update();
     reducedMotionQuery.addEventListener("change", update);
     heightQuery.addEventListener("change", update);
+    desktopQuery.addEventListener("change", update);
     return () => {
       reducedMotionQuery.removeEventListener("change", update);
       heightQuery.removeEventListener("change", update);
+      desktopQuery.removeEventListener("change", update);
     };
   }, []);
 
   return shouldStack;
+}
+
+function renderParagraph(item: AboutItem, paragraph: string, key: number, className: string) {
+  const highlightIndex = item.slug === "notre-histoire" ? paragraph.indexOf(HIGHLIGHT) : -1;
+  if (highlightIndex === -1) {
+    return (
+      <p key={key} className={className}>
+        {paragraph}
+      </p>
+    );
+  }
+  const before = paragraph.slice(0, highlightIndex);
+  const after = paragraph.slice(highlightIndex + HIGHLIGHT.length);
+  return (
+    <p key={key} className={className}>
+      {before}
+      <strong className="font-bold underline underline-offset-4">{HIGHLIGHT}</strong>
+      {after}
+    </p>
+  );
 }
 
 function AboutParagraphs({ item, isActive }: { item: AboutItem; isActive: boolean }) {
@@ -38,26 +67,9 @@ function AboutParagraphs({ item, isActive }: { item: AboutItem; isActive: boolea
       }`}
       aria-hidden={!isActive}
     >
-      {item.paragraphs.map((paragraph, index) => {
-        const highlightIndex =
-          item.slug === "notre-histoire" ? paragraph.indexOf(HIGHLIGHT) : -1;
-        if (highlightIndex === -1) {
-          return (
-            <p key={index} className="max-w-[38ch]">
-              {paragraph}
-            </p>
-          );
-        }
-        const before = paragraph.slice(0, highlightIndex);
-        const after = paragraph.slice(highlightIndex + HIGHLIGHT.length);
-        return (
-          <p key={index} className="max-w-[38ch]">
-            {before}
-            <strong className="font-bold underline underline-offset-4">{HIGHLIGHT}</strong>
-            {after}
-          </p>
-        );
-      })}
+      {item.paragraphs.map((paragraph, index) =>
+        renderParagraph(item, paragraph, index, "max-w-[38ch]"),
+      )}
 
       {item.link ? (
         <Link
@@ -123,15 +135,43 @@ export function AboutPinned() {
           {ABOUT_SECTION_LABEL}
         </span>
 
-        <div className="mt-6 flex flex-col gap-10">
-          {ABOUT_ITEMS.map((item) => (
-            <div key={item.slug} className="flex flex-col gap-4">
-              <h2 className="font-tight text-2xl font-bold leading-[1.05] tracking-[-0.02em]">
-                {item.title}
-              </h2>
-              <AboutParagraphs item={item} isActive />
-            </div>
-          ))}
+        <div className="mt-6 flex flex-col">
+          {ABOUT_ITEMS.map((item, index) => {
+            const isOpen = activeIndex === index;
+            return (
+              <div key={item.slug} className="border-b border-black/10 first:border-t">
+                <button
+                  type="button"
+                  onClick={() => setActiveIndex(isOpen ? -1 : index)}
+                  aria-expanded={isOpen}
+                  className="flex min-h-11 w-full items-center justify-between gap-4 py-4 text-left"
+                >
+                  <span className="font-tight text-xl font-bold leading-[1.1] tracking-[-0.02em]">
+                    {item.title}
+                  </span>
+                  <span aria-hidden="true" className="text-xl">
+                    {isOpen ? "−" : "+"}
+                  </span>
+                </button>
+
+                {isOpen ? (
+                  <div className="pb-5 text-base leading-relaxed text-black/70">
+                    {item.paragraphs.map((paragraph, paragraphIndex) =>
+                      renderParagraph(item, paragraph, paragraphIndex, "mb-4 last:mb-0"),
+                    )}
+                    {item.link ? (
+                      <Link
+                        href={item.link.href}
+                        className="w-fit underline underline-offset-4 hover:opacity-60"
+                      >
+                        {item.link.label}
+                      </Link>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -140,7 +180,7 @@ export function AboutPinned() {
   return (
     <div
       className="relative"
-      style={{ height: `calc(${ABOUT_ITEMS.length * RUNWAY_VH}vh + 100vh)` }}
+      style={{ height: `calc(${ABOUT_ITEMS.length * RUNWAY_VH}dvh + 100dvh)` }}
     >
       {ABOUT_ITEMS.map((_, index) => (
         <div
@@ -150,11 +190,11 @@ export function AboutPinned() {
           }}
           aria-hidden="true"
           className="pointer-events-none absolute w-px"
-          style={{ top: `${index * RUNWAY_VH}vh`, height: `${RUNWAY_VH}vh` }}
+          style={{ top: `${index * RUNWAY_VH}dvh`, height: `${RUNWAY_VH}dvh` }}
         />
       ))}
 
-      <div className="sticky top-0 flex h-screen flex-col justify-between px-6 py-10 lg:px-16 lg:py-14">
+      <div className="sticky top-0 flex h-dvh flex-col justify-between px-6 py-10 lg:px-16 lg:py-14">
         <IntroAndLabel />
 
         <div className="flex flex-1 gap-10 lg:gap-16">
