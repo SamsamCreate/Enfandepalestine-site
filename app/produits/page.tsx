@@ -21,7 +21,7 @@ export default async function ProduitsPage({ searchParams }: ProduitsPageProps) 
 
   return (
     <>
-      <ProductsToolbar />
+      <ProductsToolbar activeCategorySlug={activeCategory?.slug} />
 
       <section className="px-6 py-10 lg:px-16 lg:py-14">
         {activeCategory ? (
@@ -39,7 +39,7 @@ export default async function ProduitsPage({ searchParams }: ProduitsPageProps) 
             Aucun produit dans cette catégorie pour le moment.
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12 lg:grid-cols-4">
             {products.map((product) => (
               <ProductCard
                 key={product.slug}

@@ -28,7 +28,13 @@ export function ProductCard({
     variant === "grid" ? (
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#F2F1EE]">
         {imageSrc ? (
-          <Image src={imageSrc} alt={name} fill className="object-cover" />
+          <Image
+            src={imageSrc}
+            alt={name}
+            fill
+            sizes="(min-width: 1024px) 25vw, 50vw"
+            className="object-cover"
+          />
         ) : null}
       </div>
     ) : (
@@ -37,7 +43,13 @@ export function ProductCard({
         style={{ backgroundColor: imageSrc ? undefined : color }}
       >
         {imageSrc ? (
-          <Image src={imageSrc} alt={name} fill className="object-cover" />
+          <Image
+            src={imageSrc}
+            alt={name}
+            fill
+            sizes="288px"
+            className="object-cover"
+          />
         ) : null}
       </div>
     );

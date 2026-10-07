@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { PRODUCT_CATEGORIES } from "@/lib/products";
 
-export function ProductsToolbar() {
+interface ProductsToolbarProps {
+  activeCategorySlug?: string;
+}
+
+export function ProductsToolbar({ activeCategorySlug }: ProductsToolbarProps) {
   const [isPromoVisible, setIsPromoVisible] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -53,6 +58,32 @@ export function ProductsToolbar() {
             Panier
           </Link>
         </div>
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto px-6 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
+        <Link
+          href="/produits"
+          className={`shrink-0 rounded-full border px-4 py-2 text-xs uppercase tracking-wide ${
+            !activeCategorySlug
+              ? "border-black bg-black text-white"
+              : "border-black/20 text-black/70"
+          }`}
+        >
+          Tous
+        </Link>
+        {PRODUCT_CATEGORIES.map((category) => (
+          <Link
+            key={category.slug}
+            href={`/produits?categorie=${category.slug}`}
+            className={`shrink-0 rounded-full border px-4 py-2 text-xs uppercase tracking-wide ${
+              activeCategorySlug === category.slug
+                ? "border-black bg-black text-white"
+                : "border-black/20 text-black/70"
+            }`}
+          >
+            {category.label}
+          </Link>
+        ))}
       </div>
     </div>
   );
