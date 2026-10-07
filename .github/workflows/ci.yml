@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # Ni Stripe ni Supabase ne sont encore importés dans le code applicatif,
+      # donc le build n'a besoin d'aucune variable d'environnement pour l'instant.
+      # Le jour où ils seront branchés (lib/stripe.ts crée son client Stripe au
+      # chargement du module), il faudra ajouter les secrets correspondants ici
+      # via `env:` + des secrets de dépôt GitHub.
+      - name: Build
+        run: npm run build

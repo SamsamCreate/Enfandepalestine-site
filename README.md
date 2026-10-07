@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Enfan de Palestine
 
-## Getting Started
+Site e-commerce de la marque **Enfan de Palestine** — vêtements engagés et
+solidaires : le vêtement comme moyen de sensibiliser, transmettre et agir en
+faveur du peuple palestinien. Les bénéfices des ventes sont reversés à des
+associations partenaires.
 
-First, run the development server:
+Stack : Next.js (App Router, TypeScript), Tailwind CSS v4, Supabase, Stripe.
+
+Pour l'architecture détaillée et les décisions prises, voir
+[docs/PROJET.md](docs/PROJET.md). Pour les règles de contribution (branches,
+PR, commits), voir [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Prérequis
+
+- Node.js 24 (voir `.nvmrc` — avec [nvm](https://github.com/nvm-sh/nvm) :
+  `nvm use`)
+- npm (fourni avec Node)
+
+## Installation
 
 ```bash
+npm install
+cp .env.local.example .env.local   # puis renseigner les variables, voir ci-dessous
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables d'environnement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Chaque variable est documentée (usage + où la trouver) directement dans
+[.env.local.example](.env.local.example). Résumé :
 
-## Learn More
+| Variable | Où la trouver |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Dashboard Supabase → Project Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Dashboard Supabase → Project Settings → API |
+| `STRIPE_SECRET_KEY` | Dashboard Stripe → Developers → API keys |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Dashboard Stripe → Developers → API keys |
 
-To learn more about Next.js, take a look at the following resources:
+`.env.local` n'est jamais commité — chacun garde ses propres clés en local.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Commandes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev         # serveur de développement
+npm run build        # build de production
+npm run start         # sert le build de production
+npm run lint          # ESLint
+npm run typecheck     # vérification TypeScript (tsc --noEmit)
+```
 
-## Deploy on Vercel
+Les trois dernières commandes (`build`, `lint`, `typecheck`) sont aussi
+exécutées automatiquement sur chaque pull request (voir
+`.github/workflows/`).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Arborescence
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/                     routes (App Router), une page par dossier
+  about/                 page About us (scroll épinglé)
+  archives/               page Archives (sélecteur + visionneuse)
+  checkout/                tunnel de commande
+  donations/               historique des donations
+  panier/                   page panier
+  produits/                 liste produits + filtre par catégorie
+    [slug]/                  fiche produit
+  layout.tsx               layout racine (sidebar, footer, polices, CartProvider)
+  page.tsx                   home
+
+components/               composants UI réutilisables (un fichier = un composant)
+  icons/                    icônes SVG (logo, ...)
+
+lib/                     logique et données partagées, pas de JSX
+  data/                    contenu éditorial statique (donations, archives, about)
+                            — voir docs/PROJET.md pour le détail
+  products.ts              catalogue produits (sera remplacé par Supabase)
+  cart.ts, cart-context.tsx  état panier (Context + localStorage)
+  stripe.ts, stripe-client.ts  clients Stripe serveur / client
+  supabase/                 clients Supabase serveur / client
+
+types/                    types TypeScript partagés entre composants
+```
