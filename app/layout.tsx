@@ -29,10 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="fr"
       className={`${inter.variable} ${interTight.variable} antialiased`}
     >
-      <body className="flex min-h-screen flex-col bg-white text-black lg:flex-row">
+      <body className="flex min-h-dvh flex-col bg-white text-black lg:flex-row">
         <CartProvider>
           <Header />
-          <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex min-w-0 flex-1 flex-col pt-[calc(56px+env(safe-area-inset-top))] lg:pt-0">
             <main className="flex-1">{children}</main>
             <Footer />
           </div>

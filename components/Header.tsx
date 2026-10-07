@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Logo } from "./icons/Logo";
 import { useCart } from "@/lib/cart-context";
@@ -16,14 +16,31 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
       href: `/produits?categorie=${category.slug}`,
     })),
   },
-  { label: "About us", href: "/about" },
   { label: "Donations", href: "/donations" },
   { label: "Archives", href: "/archives" },
+  { label: "About us", href: "/about" },
   { label: "FaQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];
 
 const DEFAULT_CURRENCIES = ["EUR", "USD", "GBP"];
+
+function useCartPulse(itemCount: number) {
+  const [isPulsing, setIsPulsing] = useState(false);
+  const previousCount = useRef(itemCount);
+
+  useEffect(() => {
+    if (itemCount > previousCount.current) {
+      setIsPulsing(true);
+      const timeout = setTimeout(() => setIsPulsing(false), 500);
+      previousCount.current = itemCount;
+      return () => clearTimeout(timeout);
+    }
+    previousCount.current = itemCount;
+  }, [itemCount]);
+
+  return isPulsing;
+}
 
 interface HeaderProps {
   navLinks?: NavLink[];
@@ -48,53 +65,177 @@ export function Header({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { itemCount } = useCart();
   const resolvedCartCount = cartCount ?? itemCount;
+  const isCartPulsing = useCartPulse(resolvedCartCount);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setIsMenuOpen(false);
+    }
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMenuOpen]);
+
+  const currencySelect = (
+    <label className="flex items-center gap-2">
+      <span className="sr-only">Devise</span>
+      <select
+        value={currentCurrency}
+        onChange={(event) => onCurrencyChange?.(event.target.value)}
+        className="h-11 cursor-pointer bg-transparent underline underline-offset-4"
+      >
+        {currencies.map((currency) => (
+          <option key={currency} value={currency}>
+            {currency}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
 
   return (
-    <header className="border-black/10 lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:shrink-0 lg:border-r">
-      <div className="flex items-center justify-between border-b border-black/10 px-6 py-5 lg:hidden">
-        <Link href={logoHref} aria-label="Enfan de Palestine — accueil">
-          <Logo className="h-7 w-7" />
-        </Link>
-        <button
-          type="button"
-          onClick={() => setIsMenuOpen((open) => !open)}
-          aria-expanded={isMenuOpen}
-          aria-controls="main-nav"
-          aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-          className="flex h-9 w-9 flex-col items-center justify-center gap-1.5"
-        >
-          <span
-            className={`h-px w-5 bg-black transition-transform ${
-              isMenuOpen ? "translate-y-[3.5px] rotate-45" : ""
-            }`}
-          />
-          <span
-            className={`h-px w-5 bg-black transition-transform ${
-              isMenuOpen ? "-translate-y-[3.5px] -rotate-45" : ""
-            }`}
-          />
-        </button>
-      </div>
-
-      <nav
-        id="main-nav"
-        aria-label="Navigation principale"
-        className={`${
-          isMenuOpen ? "flex" : "hidden"
-        } flex-col gap-8 px-6 pb-8 lg:flex lg:h-full lg:py-8`}
+    <header className="lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:shrink-0 lg:border-r lg:border-black/10">
+      {/* Mobile top bar — fixed, always visible */}
+      <div
+        className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-black/10 bg-white px-4 lg:hidden"
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          height: "calc(56px + env(safe-area-inset-top))",
+        }}
       >
         <Link
           href={logoHref}
           aria-label="Enfan de Palestine — accueil"
-          className="hidden lg:block"
+          className="flex h-11 w-11 items-center justify-center"
         >
+          <Logo className="h-6 w-6" />
+        </Link>
+
+        <div className="flex items-center gap-1">
+          <Link
+            href="/panier"
+            className="flex h-11 items-center px-2 text-sm underline underline-offset-4"
+          >
+            <span
+              className={`inline-block transition-transform duration-300 ${
+                isCartPulsing ? "scale-125" : "scale-100"
+              }`}
+            >
+              Panier ({resolvedCartCount})
+            </span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen((open) => !open)}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-nav-panel"
+            aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            className="flex h-11 w-11 flex-col items-center justify-center gap-1.5"
+          >
+            <span
+              className={`h-px w-5 bg-black transition-transform ${
+                isMenuOpen ? "translate-y-[3.5px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`h-px w-5 bg-black transition-transform ${
+                isMenuOpen ? "-translate-y-[3.5px] -rotate-45" : ""
+              }`}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile full-screen panel */}
+      {isMenuOpen ? (
+        <div
+          id="mobile-nav-panel"
+          className="fixed inset-0 z-30 flex flex-col overflow-y-auto bg-white lg:hidden"
+          style={{
+            paddingTop: "calc(56px + env(safe-area-inset-top))",
+            paddingBottom: "env(safe-area-inset-bottom)",
+          }}
+        >
+          <nav aria-label="Navigation principale" className="flex flex-1 flex-col px-6 py-8">
+            <ul className="flex flex-col gap-5 text-xl leading-[1.15]" role="list">
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="inline-flex min-h-11 items-center font-medium underline underline-offset-4"
+                  >
+                    {link.label}
+                  </Link>
+
+                  {link.children ? (
+                    <ul className="mt-1 flex flex-col gap-1 pl-3 text-base text-black/50" role="list">
+                      {link.children.map((child) => (
+                        <li key={child.href}>
+                          <Link
+                            href={child.href}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="inline-flex min-h-11 items-center underline underline-offset-4"
+                          >
+                            {child.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-auto flex flex-col gap-6 border-t border-black/10 pt-6 text-sm">
+              {accountLink ? (
+                <Link
+                  href={accountLink.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="inline-flex min-h-11 w-fit items-center underline underline-offset-4"
+                >
+                  {accountLink.label}
+                </Link>
+              ) : null}
+
+              {currencySelect}
+
+              <div className="flex flex-col gap-2 text-black/70">
+                <p className="text-base leading-relaxed">
+                  Tout achat équivaut à un don à une association partenaire qui
+                  agit pour la Palestine.
+                </p>
+                <Link
+                  href="/donations"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="inline-flex min-h-11 w-fit items-center underline underline-offset-4"
+                >
+                  En savoir plus
+                </Link>
+              </div>
+            </div>
+          </nav>
+        </div>
+      ) : null}
+
+      {/* Desktop sidebar */}
+      <nav
+        aria-label="Navigation principale"
+        className="hidden flex-col gap-8 px-6 py-8 lg:flex lg:h-full"
+      >
+        <Link href={logoHref} aria-label="Enfan de Palestine — accueil">
           <Logo className="h-8 w-8" />
         </Link>
 
-        <ul
-          className="flex flex-col gap-[6px] pt-6 text-base leading-[1.1] lg:pt-0 lg:mt-[50px]"
-          role="list"
-        >
+        <ul className="flex flex-col gap-[6px] text-base leading-[1.1] lg:mt-[50px]" role="list">
           {navLinks.map((link) => (
             <li key={link.href}>
               <Link
@@ -135,26 +276,16 @@ export function Header({
             </Link>
           ) : null}
 
-          <label className="flex items-center gap-2">
-            <span className="sr-only">Devise</span>
-            <select
-              value={currentCurrency}
-              onChange={(event) => onCurrencyChange?.(event.target.value)}
-              className="cursor-pointer bg-transparent underline underline-offset-4"
-            >
-              {currencies.map((currency) => (
-                <option key={currency} value={currency}>
-                  {currency}
-                </option>
-              ))}
-            </select>
-          </label>
+          {currencySelect}
 
-          <Link
-            href="/panier"
-            className="underline underline-offset-4 hover:opacity-60"
-          >
-            Panier ({resolvedCartCount})
+          <Link href="/panier" className="underline underline-offset-4 hover:opacity-60">
+            <span
+              className={`inline-block transition-transform duration-300 ${
+                isCartPulsing ? "scale-125" : "scale-100"
+              }`}
+            >
+              Panier ({resolvedCartCount})
+            </span>
           </Link>
         </div>
       </nav>
