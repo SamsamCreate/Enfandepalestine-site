@@ -16,7 +16,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 export function ArchivePanel({ archive }: ArchivePanelProps) {
   return (
-    <div className="flex h-full flex-col justify-between overflow-y-auto border-l border-black/10 bg-[#FAFAF8] px-8 py-10 lg:px-10">
+    <div className="flex flex-col justify-between gap-10 overflow-y-auto bg-[#FAFAF8] px-6 py-10 lg:h-full lg:gap-0 lg:border-l lg:border-black/10 lg:px-10">
       <div key={archive.slug} className="animate-archive-fade flex flex-col gap-8">
         <div className="flex flex-col gap-3">
           <InfoRow label="Type" value={archive.type} />
@@ -34,7 +34,7 @@ export function ArchivePanel({ archive }: ArchivePanelProps) {
       {archive.collectionSlug ? (
         <Link
           href={`/produits?collection=${archive.collectionSlug}`}
-          className="mt-10 self-end border border-black/20 px-5 py-2.5 text-xs uppercase tracking-widest hover:bg-black hover:text-white"
+          className="flex min-h-11 w-fit items-center self-end border border-black/20 px-5 text-xs uppercase tracking-widest hover:bg-black hover:text-white lg:mt-10"
         >
           Voir la collection
         </Link>

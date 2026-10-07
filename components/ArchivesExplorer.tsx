@@ -72,7 +72,7 @@ export function ArchivesExplorer({ archives, initialIndex }: ArchivesExplorerPro
       </div>
 
       <div
-        className="order-1 h-[60vh] lg:order-2 lg:h-full lg:basis-[40%]"
+        className="order-1 h-[60dvh] lg:order-2 lg:h-full lg:basis-[40%]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >

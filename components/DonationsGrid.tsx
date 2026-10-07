@@ -64,7 +64,7 @@ export function DonationsGrid({ donations }: DonationsGridProps) {
           <button
             type="button"
             onClick={toggle}
-            className="mt-8 underline underline-offset-4 hover:opacity-60"
+            className="mt-8 inline-flex min-h-11 items-center underline underline-offset-4 hover:opacity-60"
           >
             {isExpanded ? "Voir moins −" : `Voir les ${rest.length} autres dons +`}
           </button>

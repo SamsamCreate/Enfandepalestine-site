@@ -31,7 +31,7 @@ export function ArchiveDisplay({ archive, archives, onSelect }: ArchiveDisplayPr
             type="button"
             onClick={() => onSelect(index)}
             aria-current={item.slug === archive.slug}
-            className="hover:opacity-70"
+            className="inline-flex min-h-11 items-center px-1.5 hover:opacity-70"
           >
             {item.slug === archive.slug ? `[${item.number}]` : item.number}
           </button>
