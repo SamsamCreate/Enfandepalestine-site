@@ -66,11 +66,11 @@ export default function Home() {
 
       <DonationsSection />
 
-      <section className="grid gap-8 border-t border-black/10 px-6 py-16 lg:grid-cols-2 lg:gap-16 lg:px-16 lg:py-24">
-        <div className="flex flex-col gap-8 lg:h-full">
+      <section className="grid gap-6 border-t border-black/10 px-6 py-16 lg:grid-cols-2 lg:gap-16 lg:px-16 lg:py-24">
+        <div className="flex flex-col gap-6 lg:h-full lg:gap-8">
           <SectionNumber number="03" title="Notre Histoire" />
           <div
-            className="aspect-[3/4] w-full lg:aspect-auto lg:flex-1"
+            className="aspect-[4/3] max-h-[40dvh] w-full lg:aspect-auto lg:max-h-none lg:flex-1"
             style={{ backgroundColor: "#B7ACA3" }}
           />
         </div>
