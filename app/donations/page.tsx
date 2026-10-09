@@ -44,14 +44,11 @@ export default function DonationsPage() {
       <HowItWorksSection
         heading={
           <>
-            <span className="lg:hidden">Chaque achat devient un don.</span>
-            <span className="hidden lg:inline">
-              Chaque achat
-              <br />
-              devient
-              <br />
-              un don.
-            </span>
+            Chaque achat
+            <br />
+            devient
+            <br />
+            un don.
           </>
         }
         steps={[
