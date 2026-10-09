@@ -33,7 +33,7 @@ export function DonationCard({
   }
 
   return (
-    <div className="flex w-64 shrink-0 flex-col gap-4 sm:w-72">
+    <div className="flex w-full flex-col gap-4">
       {badges}
       <p className="text-2xl font-bold sm:text-3xl">{formatDonationAmount(amount)}</p>
       <p className="text-sm leading-relaxed text-black/60">{description}</p>
