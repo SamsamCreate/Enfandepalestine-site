@@ -73,6 +73,24 @@ export function Header({
   const resolvedCartCount = cartCount ?? itemCount;
   const isCartPulsing = useCartPulse(resolvedCartCount);
   const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [isScrolledPastTop, setIsScrolledPastTop] = useState(false);
+
+  useEffect(() => {
+    if (!isHome) return;
+    function update() {
+      setIsScrolledPastTop(window.scrollY > 40);
+    }
+    const frame = requestAnimationFrame(update);
+    window.addEventListener("scroll", update, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", update);
+    };
+  }, [isHome]);
+
+  // Home only: the bar sits over the hero photo until the page scrolls (or the menu opens).
+  const isBarTransparent = isHome && !isScrolledPastTop && !isMenuOpen;
 
   function handleAnchorLinkClick(link: NavLink, event: MouseEvent<HTMLAnchorElement>) {
     const targetId =
@@ -135,12 +153,20 @@ export function Header({
     <header className="lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:shrink-0 lg:border-r lg:border-black/10">
       {/* Mobile top bar — fixed, always visible, 3-zone grid for a true centered logo */}
       <div
-        className="fixed inset-x-0 top-0 z-40 grid grid-cols-[1fr_auto_1fr] items-center border-b border-black/10 bg-white px-4 text-[17px] tracking-[-0.01em] lg:hidden"
+        className={`fixed inset-x-0 top-0 z-40 grid grid-cols-[1fr_auto_1fr] items-center border-b px-4 text-[17px] tracking-[-0.01em] motion-safe:transition-colors motion-safe:duration-200 lg:hidden ${
+          isBarTransparent ? "border-transparent bg-transparent text-white" : "border-black/10 bg-white text-black"
+        }`}
         style={{
           paddingTop: "env(safe-area-inset-top)",
           height: "calc(56px + env(safe-area-inset-top))",
         }}
       >
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 -z-10 bg-linear-to-b from-black/30 to-transparent motion-safe:transition-opacity motion-safe:duration-200 ${
+            isBarTransparent ? "opacity-100" : "opacity-0"
+          }`}
+        />
         <button
           type="button"
           onClick={() => setIsMenuOpen((open) => !open)}

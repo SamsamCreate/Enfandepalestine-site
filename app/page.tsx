@@ -1,4 +1,4 @@
-import { HeroBlock } from "@/components/HeroBlock";
+import { HeroCarousel } from "@/components/HeroCarousel";
 import { BrandQuote } from "@/components/BrandQuote";
 import { ProductCard } from "@/components/ProductCard";
 import { SectionNumber } from "@/components/SectionNumber";
@@ -16,11 +16,7 @@ const LATEST_PRODUCTS = PRODUCTS.slice(0, LATEST_PRODUCTS_COUNT);
 export default function Home() {
   return (
     <>
-      <HeroBlock
-        imageSrc="/images/IMGm427.jpg"
-        imageAlt="Enfan de Palestine"
-        href="/produits"
-      />
+      <HeroCarousel />
       <BrandQuote
         parts={[
           { text: "Enfan de Palestine", emphasis: "bold" },

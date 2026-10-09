@@ -11,6 +11,9 @@
   --font-sans: var(--font-inter);
   --font-tight: var(--font-inter-tight);
   --animate-archive-photo-in: fade-in 400ms ease-out;
+  --animate-hero-fade-in: fade-in 800ms ease-in-out;
+  /* Duration is set inline from the slide duration setting. */
+  --animate-hero-progress: hero-progress linear forwards;
   /* Walk cycle: 2 poses x 125ms = 8 frames per second. */
   --animate-walk-a: walk-a 250ms steps(2, jump-none) infinite;
   --animate-walk-b: walk-b 250ms steps(2, jump-none) infinite;
@@ -29,6 +32,15 @@ body {
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes hero-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
 
