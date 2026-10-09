@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { MouseEvent } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "./icons/Logo";
 import { useCart } from "@/lib/cart-context";
 import { PRODUCT_CATEGORIES } from "@/lib/products";
+import { scrollToId } from "@/lib/scroll-to-id";
 import type { NavLink } from "@/types";
 
 const DEFAULT_NAV_LINKS: NavLink[] = [
@@ -19,11 +22,14 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
   { label: "Donations", href: "/donations" },
   { label: "Archives", href: "/archives" },
   { label: "About us", href: "/about" },
-  { label: "FaQ", href: "/faq" },
-  { label: "Contact", href: "/contact" },
+  { label: "FaQ", href: "/#faq" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const DEFAULT_CURRENCIES = ["EUR", "USD", "GBP"];
+
+const NAV_FOCUS_RING =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black";
 
 function useCartPulse(itemCount: number) {
   const [isPulsing, setIsPulsing] = useState(false);
@@ -66,6 +72,30 @@ export function Header({
   const { itemCount } = useCart();
   const resolvedCartCount = cartCount ?? itemCount;
   const isCartPulsing = useCartPulse(resolvedCartCount);
+  const pathname = usePathname();
+
+  function handleAnchorLinkClick(link: NavLink, event: MouseEvent<HTMLAnchorElement>) {
+    const targetId =
+      link.label === "Contact" ? "contact" : link.label === "FaQ" ? "faq" : null;
+    if (!targetId) {
+      setIsMenuOpen(false);
+      return;
+    }
+
+    const isOnHome = pathname === "/";
+    // FaQ only exists on the home page: off-home, let the Link navigate to "/#faq" normally.
+    if (targetId === "faq" && !isOnHome) {
+      setIsMenuOpen(false);
+      return;
+    }
+
+    event.preventDefault();
+    setIsMenuOpen(false);
+    // Wait a frame (menu unmount + body scroll restore) before measuring/scrolling.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => scrollToId(targetId));
+    });
+  }
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -103,55 +133,41 @@ export function Header({
 
   return (
     <header className="lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:shrink-0 lg:border-r lg:border-black/10">
-      {/* Mobile top bar — fixed, always visible */}
+      {/* Mobile top bar — fixed, always visible, 3-zone grid for a true centered logo */}
       <div
-        className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-black/10 bg-white px-4 lg:hidden"
+        className="fixed inset-x-0 top-0 z-40 grid grid-cols-[1fr_auto_1fr] items-center border-b border-black/10 bg-white px-4 text-[17px] tracking-[-0.01em] lg:hidden"
         style={{
           paddingTop: "env(safe-area-inset-top)",
           height: "calc(56px + env(safe-area-inset-top))",
         }}
       >
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen((open) => !open)}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-nav-panel"
+          className="flex h-11 w-fit items-center justify-self-start"
+        >
+          {isMenuOpen ? "Fermer" : "Menu"}
+        </button>
+
         <Link
           href={logoHref}
           aria-label="Enfan de Palestine — accueil"
-          className="flex h-11 w-11 items-center justify-center"
+          className="flex h-11 items-center justify-self-center"
         >
           <Logo className="h-6 w-6" />
         </Link>
 
-        <div className="flex items-center gap-1">
-          <Link
-            href="/panier"
-            className="flex h-11 items-center px-2 text-sm underline underline-offset-4"
+        <Link href="/panier" className="flex h-11 w-fit items-center justify-self-end">
+          <span
+            className={`inline-block transition-transform duration-300 ${
+              isCartPulsing ? "scale-125" : "scale-100"
+            }`}
           >
-            <span
-              className={`inline-block transition-transform duration-300 ${
-                isCartPulsing ? "scale-125" : "scale-100"
-              }`}
-            >
-              Panier ({resolvedCartCount})
-            </span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen((open) => !open)}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-nav-panel"
-            aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-            className="flex h-11 w-11 flex-col items-center justify-center gap-1.5"
-          >
-            <span
-              className={`h-px w-5 bg-black transition-transform ${
-                isMenuOpen ? "translate-y-[3.5px] rotate-45" : ""
-              }`}
-            />
-            <span
-              className={`h-px w-5 bg-black transition-transform ${
-                isMenuOpen ? "-translate-y-[3.5px] -rotate-45" : ""
-              }`}
-            />
-          </button>
-        </div>
+            Panier<sup className="text-[65%]">({resolvedCartCount})</sup>
+          </span>
+        </Link>
       </div>
 
       {/* Mobile full-screen panel */}
@@ -165,25 +181,31 @@ export function Header({
           }}
         >
           <nav aria-label="Navigation principale" className="flex flex-1 flex-col px-6 py-8">
-            <ul className="flex flex-col gap-5 text-xl leading-[1.15]" role="list">
+            <ul
+              className="flex flex-col gap-[10px] text-xl leading-[1.1] tracking-[-0.02em]"
+              role="list"
+            >
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="inline-flex min-h-11 items-center font-medium underline underline-offset-4"
+                    onClick={(event) => handleAnchorLinkClick(link, event)}
+                    className={`inline-flex min-h-11 w-fit items-center font-medium hover:opacity-60 ${NAV_FOCUS_RING}`}
                   >
                     {link.label}
                   </Link>
 
                   {link.children ? (
-                    <ul className="mt-1 flex flex-col gap-1 pl-3 text-base text-black/50" role="list">
+                    <ul
+                      className="mt-1 flex flex-col gap-[5px] pl-3 text-base leading-[1.1] tracking-[-0.01em] text-black/50"
+                      role="list"
+                    >
                       {link.children.map((child) => (
                         <li key={child.href}>
                           <Link
                             href={child.href}
                             onClick={() => setIsMenuOpen(false)}
-                            className="inline-flex min-h-11 items-center underline underline-offset-4"
+                            className={`inline-flex min-h-11 items-center ${NAV_FOCUS_RING}`}
                           >
                             {child.label}
                           </Link>
@@ -235,26 +257,30 @@ export function Header({
           <Logo className="h-8 w-8" />
         </Link>
 
-        <ul className="flex flex-col gap-[6px] text-base leading-[1.1] lg:mt-[50px]" role="list">
+        <ul
+          className="flex flex-col gap-[10px] text-base leading-[1.1] tracking-[-0.02em] lg:mt-[50px]"
+          role="list"
+        >
           {navLinks.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="font-medium underline underline-offset-4 hover:opacity-60"
+                onClick={(event) => handleAnchorLinkClick(link, event)}
+                className={`font-medium hover:opacity-60 ${NAV_FOCUS_RING}`}
               >
                 {link.label}
               </Link>
 
               {link.children ? (
                 <ul
-                  className="mt-1 flex flex-col gap-[4px] pl-3 text-sm leading-[1.1] text-black/50"
+                  className="mt-1 flex flex-col gap-[5px] pl-3 text-sm leading-[1.1] tracking-[-0.01em] text-black/50"
                   role="list"
                 >
                   {link.children.map((child) => (
                     <li key={child.href}>
                       <Link
                         href={child.href}
-                        className="underline underline-offset-4 hover:text-black"
+                        className={`hover:text-black ${NAV_FOCUS_RING}`}
                       >
                         {child.label}
                       </Link>

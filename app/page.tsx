@@ -5,6 +5,7 @@ import { SectionNumber } from "@/components/SectionNumber";
 import { SplitColorBlock } from "@/components/SplitColorBlock";
 import { DonationsSection } from "@/components/DonationsSection";
 import { FaqAccordion } from "@/components/FaqAccordion";
+import { FaqHashScroller } from "@/components/FaqHashScroller";
 import { FAQ_ITEMS } from "@/lib/data/faq";
 
 const LATEST_PRODUCTS = [
@@ -102,12 +103,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-black px-6 py-16 text-white lg:px-16 lg:py-24">
+      <section
+        id="faq"
+        className="scroll-mt-[calc(56px+env(safe-area-inset-top))] bg-black px-6 py-16 text-white lg:scroll-mt-0 lg:px-16 lg:py-24"
+      >
         <h2 className="mb-10 font-tight text-3xl font-bold leading-[1.1] tracking-[-0.02em] sm:text-4xl lg:text-5xl">
           Question fréquent (FAQ)
         </h2>
         <FaqAccordion items={FAQ_ITEMS} />
       </section>
+
+      <FaqHashScroller />
     </>
   );
 }
