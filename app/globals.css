@@ -11,6 +11,10 @@
   --font-sans: var(--font-inter);
   --font-tight: var(--font-inter-tight);
   --animate-archive-photo-in: fade-in 400ms ease-out;
+  /* Walk cycle: 2 poses x 125ms = 8 frames per second. */
+  --animate-walk-a: walk-a 250ms steps(2, jump-none) infinite;
+  --animate-walk-b: walk-b 250ms steps(2, jump-none) infinite;
+  --animate-walk-bounce: walk-bounce 250ms steps(2, jump-none) infinite;
 }
 
 body {
@@ -25,5 +29,32 @@ body {
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes walk-a {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes walk-b {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes walk-bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-1.5px);
   }
 }
