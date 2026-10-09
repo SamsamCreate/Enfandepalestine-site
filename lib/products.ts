@@ -18,6 +18,8 @@ export interface Product {
   currency: string;
   inStock: boolean;
   sizes: string[];
+  /** Sizes listed but out of stock: shown greyed and struck through, not selectable. */
+  unavailableSizes?: string[];
   formatsLabel: string;
   description: string;
   /** Accordion content — left undefined to fall back to a placeholder until written per product. */
