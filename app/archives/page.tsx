@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArchivesExplorer } from "@/components/ArchivesExplorer";
+import { ArchivesCarousel } from "@/components/ArchivesCarousel";
 import { ARCHIVES } from "@/lib/data/archives";
 
 export const metadata: Metadata = {
@@ -17,5 +17,5 @@ export default async function ArchivesPage({ searchParams }: ArchivesPageProps) 
     ARCHIVES.findIndex((item) => item.slug === archive),
   );
 
-  return <ArchivesExplorer archives={ARCHIVES} initialIndex={initialIndex} />;
+  return <ArchivesCarousel archives={ARCHIVES} initialIndex={initialIndex} />;
 }
