@@ -2,6 +2,8 @@
 
 import { useCart } from "@/lib/cart-context";
 import { formatPrice, type CartItem } from "@/lib/cart";
+import { SHIPPING_SETTINGS } from "@/lib/data/shipping";
+import { getProductBySlug, isPreorder } from "@/lib/products";
 
 interface CartLineItemProps {
   item: CartItem;
@@ -9,6 +11,8 @@ interface CartLineItemProps {
 
 export function CartLineItem({ item }: CartLineItemProps) {
   const { updateQuantity, removeItem } = useCart();
+  const preorderDelay = SHIPPING_SETTINGS.preorderDelay.trim();
+  const isPreorderLine = isPreorder(getProductBySlug(item.productSlug), item.name);
 
   return (
     <li className="flex gap-3 border-b border-black/10 py-6 first:border-t sm:gap-4">
@@ -26,6 +30,11 @@ export function CartLineItem({ item }: CartLineItemProps) {
       <div className="flex flex-1 flex-col gap-3">
         <div>
           <p className="text-sm font-medium leading-snug">{item.name}</p>
+          {isPreorderLine ? (
+            <p className="mt-1 text-xs font-medium">
+              {preorderDelay ? `Précommande · expédition estimée : ${preorderDelay}` : "Précommande"}
+            </p>
+          ) : null}
           <p className="mt-1 text-xs text-black/50">
             {[item.variantLabel, `Taille ${item.size}`].filter(Boolean).join(" · ")}
           </p>

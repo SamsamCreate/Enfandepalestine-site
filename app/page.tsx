@@ -8,10 +8,9 @@ import { FaqAccordion } from "@/components/FaqAccordion";
 import { FaqHashScroller } from "@/components/FaqHashScroller";
 import { FAQ_ITEMS } from "@/lib/data/faq";
 import { ProductGrid } from "@/components/ProductGrid";
-import { PRODUCTS } from "@/lib/products";
+import { getLatestProducts } from "@/lib/products";
 
-const LATEST_PRODUCTS_COUNT = 4;
-const LATEST_PRODUCTS = PRODUCTS.slice(0, LATEST_PRODUCTS_COUNT);
+const LATEST_PRODUCTS = getLatestProducts();
 
 export default function Home() {
   return (

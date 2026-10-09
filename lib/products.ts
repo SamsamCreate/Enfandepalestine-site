@@ -32,6 +32,10 @@ export interface Product {
   colorLabel?: string;
   /** Card label, top-left. Defaults to "NEW IN" in ProductCard; pass "" to hide it. */
   label?: string;
+  /** e.g. "precommande" marks a pre-order product in the cart. */
+  tags?: string[];
+  /** Slugs suggested first in the cart ("Complète avec"), before same-category products. */
+  complementary?: string[];
 }
 
 const COLOR_NAMES: Record<string, string> = {
@@ -197,4 +201,19 @@ export const PRODUCTS: Product[] = [
 
 export function getProductBySlug(slug: string) {
   return PRODUCTS.find((product) => product.slug === slug);
+}
+
+export const LATEST_PRODUCTS_COUNT = 4;
+
+/** The "Dernières sorties" collection. */
+export function getLatestProducts(count = LATEST_PRODUCTS_COUNT) {
+  return PRODUCTS.slice(0, count);
+}
+
+export function isPreorder(product: Pick<Product, "name" | "tags"> | undefined, itemName = "") {
+  return Boolean(
+    product?.tags?.includes("precommande") ||
+      product?.name.startsWith("Précommande") ||
+      itemName.startsWith("Précommande"),
+  );
 }

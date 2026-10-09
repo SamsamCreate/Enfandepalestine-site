@@ -55,6 +55,28 @@ Les trois dernières commandes (`build`, `lint`, `typecheck`) sont aussi
 exécutées automatiquement sur chaque pull request (voir
 `.github/workflows/`).
 
+## Livraison (réglages)
+
+Les réglages de livraison affichés dans le panier sont dans
+[lib/data/shipping.ts](lib/data/shipping.ts) :
+
+| Réglage | Défaut |
+| --- | --- |
+| Seuil de livraison offerte (point relais) | 100 € |
+| Frais point relais | 4,50 € |
+| Frais à domicile (Colissimo) | « dès 8,99 € » |
+| Texte des délais | « Préparation sous 24 à 72 h ouvrées… » |
+| Délai de précommande | vide (affiche « Précommande » seul) |
+| Texte « expéditions séparées » | vide (masqué) |
+
+> ⚠ **Les trois montants doivent rester identiques à ceux de Shopify
+> (Paramètres > Expédition).** Si un tarif change dans Shopify, le changer
+> ici aussi, sinon le panier annonce un montant différent de celui payé.
+
+Une ligne du panier est en précommande si le produit a le tag `precommande`
+(champ `tags` dans `lib/products.ts`) ou si son nom commence par
+« Précommande ».
+
 ## Arborescence
 
 ```
