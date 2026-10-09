@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductGrid } from "@/components/ProductGrid";
 import { ProductsToolbar } from "@/components/ProductsToolbar";
 import { PRODUCTS, PRODUCT_CATEGORIES } from "@/lib/products";
 
@@ -23,9 +24,9 @@ export default async function ProduitsPage({ searchParams }: ProduitsPageProps) 
     <>
       <ProductsToolbar activeCategorySlug={activeCategory?.slug} />
 
-      <section className="px-6 py-10 lg:px-16 lg:py-14">
+      <section className="py-10 lg:py-14">
         {activeCategory ? (
-          <p className="mb-6 text-sm text-black/60">
+          <p className="mb-6 px-6 text-sm text-black/60 lg:px-16">
             Catégorie : <span className="font-medium text-black">{activeCategory.label}</span>
             {" · "}
             <Link href="/produits" className="underline underline-offset-4 hover:opacity-60">
@@ -35,23 +36,27 @@ export default async function ProduitsPage({ searchParams }: ProduitsPageProps) 
         ) : null}
 
         {products.length === 0 ? (
-          <p className="text-sm text-black/60">
+          <p className="px-6 text-sm text-black/60 lg:px-16">
             Aucun produit dans cette catégorie pour le moment.
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12 lg:grid-cols-4">
-            {products.map((product) => (
+          <ProductGrid>
+            {products.map((product, i) => (
               <ProductCard
                 key={product.slug}
-                variant="grid"
                 name={product.name}
                 price={product.price}
                 currency={product.currency}
                 inStock={product.inStock}
+                images={product.images}
+                color={product.color}
+                colorLabel={product.colorLabel}
+                label={product.label}
                 href={`/produits/${product.slug}`}
+                priority={i < 4}
               />
             ))}
-          </div>
+          </ProductGrid>
         )}
       </section>
     </>

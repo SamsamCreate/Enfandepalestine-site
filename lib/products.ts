@@ -24,7 +24,21 @@ export interface Product {
   detail?: string;
   sizeGuide?: string;
   images: string[];
+  /** Swatch colour shown on the product card, top-right. Omit to hide the swatch. */
+  color?: string;
+  /** Human-readable name for `color`, used as the swatch's aria-label. */
+  colorLabel?: string;
+  /** Card label, top-left. Defaults to "NEW IN" in ProductCard; pass "" to hide it. */
+  label?: string;
 }
+
+const COLOR_NAMES: Record<string, string> = {
+  "#7A6666": "Brun rosé",
+  "#3F3B38": "Anthracite",
+  "#A8998C": "Beige taupe",
+  "#C9C2B8": "Beige clair",
+  "#B7ACA3": "Taupe",
+};
 
 export const PRODUCTS: Product[] = [
   {
@@ -39,6 +53,8 @@ export const PRODUCTS: Product[] = [
     description:
       "T-shirt en coton biologique épais, sérigraphie artisanale sur la poitrine. Une pièce du quotidien pensée pour porter un message d'espoir.",
     images: ["#7A6666", "#3F3B38", "#A8998C"],
+    color: "#7A6666",
+    colorLabel: COLOR_NAMES["#7A6666"],
   },
   {
     slug: "kids-have-dreams-too",
@@ -52,6 +68,8 @@ export const PRODUCTS: Product[] = [
     description:
       "Marinière en jersey épais rayé, brodée sur le devant. Un clin d'œil au vestiaire intemporel, réinterprété pour porter la cause palestinienne.",
     images: ["#3F3B38", "#A8998C", "#C9C2B8"],
+    color: "#3F3B38",
+    colorLabel: COLOR_NAMES["#3F3B38"],
   },
   {
     slug: "on-ne-part-pas",
@@ -65,6 +83,8 @@ export const PRODUCTS: Product[] = [
     description:
       "T-shirt en coton biologique épais, sérigraphie artisanale dans le dos. Une déclaration d'attachement à la terre et à la mémoire.",
     images: ["#A8998C", "#C9C2B8", "#7A6666"],
+    color: "#A8998C",
+    colorLabel: COLOR_NAMES["#A8998C"],
   },
   {
     slug: "terre-et-memoire",
@@ -78,6 +98,8 @@ export const PRODUCTS: Product[] = [
     description:
       "Hoodie épais en molleton gratté, brodé sur la poitrine. Une pièce chaude conçue pour durer, pensée comme un objet de transmission.",
     images: ["#C9C2B8", "#7A6666", "#3F3B38"],
+    color: "#C9C2B8",
+    colorLabel: COLOR_NAMES["#C9C2B8"],
   },
   {
     slug: "racines",
@@ -91,6 +113,8 @@ export const PRODUCTS: Product[] = [
     description:
       "T-shirt en coton biologique épais, illustration inspirée des motifs traditionnels palestiniens brodés au tatreez.",
     images: ["#B7ACA3", "#3F3B38", "#A8998C"],
+    color: "#B7ACA3",
+    colorLabel: COLOR_NAMES["#B7ACA3"],
   },
   {
     slug: "memoire-vivante",
@@ -104,6 +128,8 @@ export const PRODUCTS: Product[] = [
     description:
       "Sweat en molleton léger, sérigraphie sur la poitrine. Confortable au quotidien, pensé pour accompagner et transmettre une histoire.",
     images: ["#7A6666", "#C9C2B8", "#B7ACA3"],
+    color: "#7A6666",
+    colorLabel: COLOR_NAMES["#7A6666"],
   },
   {
     slug: "olivier",
@@ -117,6 +143,8 @@ export const PRODUCTS: Product[] = [
     description:
       "Casquette brodée d'une branche d'olivier, symbole de paix et d'enracinement. Visière incurvée, fermeture ajustable à l'arrière.",
     images: ["#3F3B38", "#A8998C", "#7A6666"],
+    color: "#3F3B38",
+    colorLabel: COLOR_NAMES["#3F3B38"],
   },
   {
     slug: "liberte",
@@ -130,6 +158,8 @@ export const PRODUCTS: Product[] = [
     description:
       "T-shirt en coton biologique épais, sérigraphie artisanale sur la poitrine. Une pièce simple pour porter un mot fort.",
     images: ["#A8998C", "#7A6666", "#C9C2B8"],
+    color: "#A8998C",
+    colorLabel: COLOR_NAMES["#A8998C"],
   },
   {
     slug: "enfance",
@@ -143,6 +173,8 @@ export const PRODUCTS: Product[] = [
     description:
       "Marinière en jersey épais rayé, brodée sur le devant. Un hommage à l'enfance palestinienne, entre douceur et résistance.",
     images: ["#C9C2B8", "#B7ACA3", "#3F3B38"],
+    color: "#C9C2B8",
+    colorLabel: COLOR_NAMES["#C9C2B8"],
   },
   {
     slug: "retour",
@@ -156,6 +188,8 @@ export const PRODUCTS: Product[] = [
     description:
       "Hoodie épais en molleton gratté, brodé sur la poitrine. Une pièce chaude qui porte l'idée du droit au retour.",
     images: ["#7A6666", "#3F3B38", "#C9C2B8"],
+    color: "#7A6666",
+    colorLabel: COLOR_NAMES["#7A6666"],
   },
 ];
 

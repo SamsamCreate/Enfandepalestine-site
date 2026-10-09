@@ -7,13 +7,11 @@ import { DonationsSection } from "@/components/DonationsSection";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { FaqHashScroller } from "@/components/FaqHashScroller";
 import { FAQ_ITEMS } from "@/lib/data/faq";
+import { ProductGrid } from "@/components/ProductGrid";
+import { PRODUCTS } from "@/lib/products";
 
-const LATEST_PRODUCTS = [
-  { name: "T-shirt - DEMAIN TOUT IRA MIEUX", price: 40, color: "#7A6666" },
-  { name: "Marinière - KIDS HAVE DREAMS TOO", price: 55, color: "#3F3B38" },
-  { name: "T-shirt - ON NE PART PAS", price: 40, color: "#A8998C" },
-  { name: "Hoodie - TERRE ET MÉMOIRE", price: 75, color: "#C9C2B8" },
-];
+const LATEST_PRODUCTS_COUNT = 4;
+const LATEST_PRODUCTS = PRODUCTS.slice(0, LATEST_PRODUCTS_COUNT);
 
 export default function Home() {
   return (
@@ -34,17 +32,27 @@ export default function Home() {
         ]}
       />
 
-      <section className="border-t border-black/10 px-6 py-16 lg:px-16 lg:py-20">
-        <h2 className="mb-8 font-tight text-xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-2xl">
+      <section className="border-t border-black/10 py-16 lg:py-20">
+        <h2 className="mb-8 px-6 font-tight text-xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-2xl lg:px-16">
           Dernières sorties
         </h2>
-        <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-10 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
-          {LATEST_PRODUCTS.map((product) => (
-            <div key={product.name} className="w-[78%] shrink-0 snap-start md:w-auto md:shrink">
-              <ProductCard {...product} />
-            </div>
+        <ProductGrid>
+          {LATEST_PRODUCTS.map((product, i) => (
+            <ProductCard
+              key={product.slug}
+              name={product.name}
+              price={product.price}
+              currency={product.currency}
+              inStock={product.inStock}
+              images={product.images}
+              color={product.color}
+              colorLabel={product.colorLabel}
+              label={product.label}
+              href={`/produits/${product.slug}`}
+              priority={i < 4}
+            />
           ))}
-        </div>
+        </ProductGrid>
       </section>
 
       <section className="grid gap-8 border-t border-black/10 px-6 py-16 lg:grid-cols-2 lg:gap-16 lg:px-16 lg:py-24">
