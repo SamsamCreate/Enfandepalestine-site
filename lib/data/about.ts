@@ -7,7 +7,7 @@ export interface AboutItem {
 }
 
 export const ABOUT_INTRO =
-  "Enfan de Palestine est un projet humanitaire visant à aider les enfants palestiniens par le biais de vêtements. Les produits que nous vendons permettent en premier lieu de soutenir financièrement des ONG humanitaires.";
+  "Enfan de Palestine est un projet humanitaire visant à aider les enfants palestiniens par le biais de vêtements. Les produits que nous vendons permettent en premier lieu de soutenir financièrement des associations humanitaires.";
 
 export const ABOUT_SECTION_LABEL = "NOTRE PROJET";
 
@@ -33,7 +33,8 @@ export const ABOUT_ITEMS: AboutItem[] = [
     slug: "notre-direction-artistique",
     title: "Notre direction artistique",
     paragraphs: [
-      "Notre direction artistique met l'accent sur les fautes d'orthographe et les dessins négligés, afin d'évoquer l'innocence des enfants. Il s'agit donc également d'un projet de sensibilisation.",
+      "Notre direction artistique s'inspire du regard des enfants : des traits libres et des mots simples, porteurs d'espoir.",
+      "Chaque pièce rappelle qu'au-delà de l'actualité, il y a des enfants qui rêvent, jouent et grandissent, et une humanité commune qui nous relie. Porter nos vêtements, c'est faire vivre ce message et le transmettre autour de soi.",
     ],
   },
   {
