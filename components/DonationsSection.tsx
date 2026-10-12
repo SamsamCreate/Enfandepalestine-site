@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Link from "next/link";
 import { DonationCard } from "./DonationCard";
-import { WalkingFigure } from "./icons/WalkingFigure";
+import { WALKER_ANCHOR_X, WALKER_ASPECT, WalkingFigure } from "./icons/WalkingFigure";
 import { getSortedDonations, type Donation } from "@/lib/data/donations";
 
-const SQUARE_SIZE = 6;
 const STOP_DELAY_MS = 150;
+// The walker's feet travel between the first and last squares. Each end is inset by the drawing's
+// width left of the feet (the larger side), so the balloon stays inside the frieze facing either way.
+const TRACK_INSET_RATIO = WALKER_ANCHOR_X * WALKER_ASPECT; // × walker height
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -58,8 +60,9 @@ export function DonationsSection({
       const maxScroll = scroller!.scrollWidth - scroller!.clientWidth;
       const scrollLeft = scroller!.scrollLeft;
       const progress = maxScroll > 0 ? Math.min(1, Math.max(0, scrollLeft / maxScroll)) : 0;
-      const centerX = SQUARE_SIZE / 2 + progress * (friezeWidth - SQUARE_SIZE);
-      walker!.style.transform = `translate3d(${centerX - walkerWidth / 2}px, 0, 0)`;
+      // Feet at inset + progress × track, so the walker's left edge is progress × track.
+      const track = friezeWidth - 2 * walkerWidth * WALKER_ANCHOR_X;
+      walker!.style.transform = `translate3d(${progress * track}px, 0, 0)`;
 
       const delta = scrollLeft - lastScrollLeft;
       if (Math.abs(delta) > 0.5) facing!.style.transform = delta < 0 ? "scaleX(-1)" : "";
@@ -169,8 +172,11 @@ export function DonationsSection({
         </div>
       </div>
 
-      {/* Fixed frieze: dotted line 3.5px above the bottom edge; the figure's feet rest on its top. */}
-      <div ref={friezeRef} className="relative mt-6 h-9 lg:h-11">
+      {/* Fixed frieze: dotted line 3.5px above the bottom edge; the boy's feet rest on its top. */}
+      <div
+        ref={friezeRef}
+        className="relative mt-6 h-[calc(var(--walker-h)+8px)] [--walker-h:64px] lg:[--walker-h:80px]"
+      >
         <div aria-hidden="true" className="absolute inset-x-0 bottom-[3px] border-t border-dotted border-black/30" />
 
         {donations.map((donation, index) => {
@@ -182,7 +188,9 @@ export function DonationsSection({
               onClick={() => scrollToDonation(index)}
               aria-label={`Aller au don ${donation.dateLabel}, ${donation.organization}`}
               className="group/square absolute top-[calc(100%-3.5px)] flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-black"
-              style={{ left: `calc(${SQUARE_SIZE / 2}px + ${ratio} * (100% - ${SQUARE_SIZE}px))` }}
+              style={{
+                left: `calc(var(--walker-h) * ${TRACK_INSET_RATIO} + ${ratio} * (100% - var(--walker-h) * ${2 * TRACK_INSET_RATIO}))`,
+              }}
             >
               <span className="block h-1.5 w-1.5 bg-black group-hover/square:scale-150 motion-safe:transition-transform" />
             </button>
@@ -194,8 +202,12 @@ export function DonationsSection({
           aria-hidden="true"
           className="pointer-events-none absolute bottom-[4px] left-0 z-10 will-change-transform"
         >
-          <div ref={facingRef}>
-            <WalkingFigure isWalking={isWalking} className="block h-7 w-[22.4px] lg:h-9 lg:w-[28.8px]" />
+          {/* Turning around mirrors the drawing around the feet, so they stay on the same spot. */}
+          <div ref={facingRef} style={{ transformOrigin: `${WALKER_ANCHOR_X * 100}% 50%` }}>
+            <WalkingFigure
+              isWalking={isWalking}
+              style={{ height: "var(--walker-h)", width: `calc(var(--walker-h) * ${WALKER_ASPECT})` }}
+            />
           </div>
         </div>
       </div>

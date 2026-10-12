@@ -14,10 +14,10 @@
   --animate-hero-fade-in: fade-in 800ms ease-in-out;
   /* Duration is set inline from the slide duration setting. */
   --animate-hero-progress: hero-progress linear forwards;
-  /* Walk cycle: 2 poses x 125ms = 8 frames per second. */
-  --animate-walk-a: walk-a 250ms steps(2, jump-none) infinite;
-  --animate-walk-b: walk-b 250ms steps(2, jump-none) infinite;
-  --animate-walk-bounce: walk-bounce 250ms steps(2, jump-none) infinite;
+  /* Walk cycle 03 → 04 → 05 → 04, one drawing every 150ms. */
+  --animate-walk-03: walk-03 600ms step-end infinite;
+  --animate-walk-04: walk-04 600ms step-end infinite;
+  --animate-walk-05: walk-05 600ms step-end infinite;
 }
 
 body {
@@ -44,29 +44,36 @@ body {
   }
 }
 
-@keyframes walk-a {
-  from {
+/* step-end: each opacity holds until the next keyframe (quarters: 03, 04, 05, 04). */
+@keyframes walk-03 {
+  0% {
     opacity: 1;
   }
-  to {
+  25%,
+  100% {
     opacity: 0;
   }
 }
 
-@keyframes walk-b {
-  from {
+@keyframes walk-04 {
+  0%,
+  50% {
     opacity: 0;
   }
-  to {
+  25%,
+  75%,
+  100% {
     opacity: 1;
   }
 }
 
-@keyframes walk-bounce {
-  from {
-    transform: translateY(0);
+@keyframes walk-05 {
+  0%,
+  75%,
+  100% {
+    opacity: 0;
   }
-  to {
-    transform: translateY(-1.5px);
+  50% {
+    opacity: 1;
   }
 }
